@@ -90,7 +90,7 @@ public class DocumentManager {
                 .map(String::toLowerCase)
                 .toList();
         return contents.stream()
-                .allMatch(content -> document.getContent().toLowerCase().contains(content));
+                .anyMatch(content -> document.getContent().toLowerCase().contains(content));
     }
 
     private boolean isAuthorIdsMatching(Document document, SearchRequest request) {
