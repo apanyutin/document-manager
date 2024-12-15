@@ -72,10 +72,8 @@ public class DocumentManager {
         if (document.getTitle() == null) {
             return false;
         }
-        List<String> prefixes = request.getTitlePrefixes().stream()
+        return request.getTitlePrefixes().stream()
                 .map(String::toLowerCase)
-                .toList();
-        return prefixes.stream()
                 .anyMatch(prefix -> document.getTitle().toLowerCase().startsWith(prefix));
     }
 
@@ -86,10 +84,8 @@ public class DocumentManager {
         if (document.getTitle() == null) {
             return false;
         }
-        List<String> contents = request.getContainsContents().stream()
+        return request.getContainsContents().stream()
                 .map(String::toLowerCase)
-                .toList();
-        return contents.stream()
                 .anyMatch(content -> document.getContent().toLowerCase().contains(content));
     }
 
