@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,7 +20,6 @@ import lombok.Data;
  * This class could be auto tested
  */
 public class DocumentManager {
-    private static long id = 0;
     private final Map<String, Document> storage = new HashMap<>();
 
     /**
@@ -34,10 +34,11 @@ public class DocumentManager {
             throw new IllegalArgumentException("Document cannot be null");
         }
         if (document.getId() == null) {
+            String id;
             do {
-                id++;
-            } while (storage.containsKey(String.valueOf(id)));
-            document.setId(String.valueOf(id));
+                id = UUID.randomUUID().toString();
+            } while (storage.containsKey(id));
+            document.setId(id);
         }
         storage.put(document.getId(), document);
         return document;
@@ -81,7 +82,7 @@ public class DocumentManager {
         if (request.getContainsContents() == null || request.getContainsContents().isEmpty()) {
             return true;
         }
-        if (document.getTitle() == null) {
+        if (document.getContent() == null) {
             return false;
         }
         return request.getContainsContents().stream()
@@ -94,12 +95,18 @@ public class DocumentManager {
         if (authorIds == null || authorIds.isEmpty()) {
             return true;
         }
+        if (document.getAuthor() == null || document.getAuthor().getId() == null) {
+            return false;
+        }
         return authorIds.contains(document.getAuthor().getId());
     }
 
     private boolean isCreatedInRange(Document document, SearchRequest request) {
         Instant createdFrom = request.getCreatedFrom();
         Instant createdTo = request.getCreatedTo();
+        if (document.getCreated() == null) {
+            return false;
+        }
         return (createdFrom == null || !document.getCreated().isBefore(createdFrom))
                 && (createdTo == null || !document.getCreated().isAfter(createdTo));
     }
@@ -111,10 +118,7 @@ public class DocumentManager {
      * @return optional document
      */
     public Optional<Document> findById(String id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id cannot be null");
-        }
-        return Optional.ofNullable(storage.get(id));
+        return id == null ? Optional.empty() : Optional.ofNullable(storage.get(id));
     }
 
     @Data

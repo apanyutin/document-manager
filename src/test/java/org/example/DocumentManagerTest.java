@@ -93,10 +93,9 @@ class DocumentManagerTest {
     }
 
     @Test
-    void findById_IdIsNull_ShouldThrowException() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, () -> manager.findById(null));
-        assertEquals("Id cannot be null", exception.getMessage());
+    void findById_IdIsNull_ShouldReturnEmpty() {
+        Optional<DocumentManager.Document> result = manager.findById(null);
+        assertTrue(result.isEmpty());
     }
 
     @Test
